@@ -35,6 +35,8 @@
             background-color: var(--bg-deep);
             color: var(--text-white);
             overflow: hidden;
+            /* 針對全螢幕模式優化 */
+            position: fixed;
         }
 
         /* 全域背景層 */
@@ -55,8 +57,10 @@
             display: none;
             flex-direction: column;
             padding: 24px;
-            padding-bottom: env(safe-area-inset-bottom, 110px); 
-            overflow-y: auto; /* 允許整頁滾動而非局部 */
+            /* 使用動態計算，預留底部導覽列與安全區域空間 */
+            padding-bottom: calc(140px + env(safe-area-inset-bottom)); 
+            padding-top: calc(24px + env(safe-area-inset-top));
+            overflow-y: auto; 
             transition: opacity 0.5s ease;
         }
 
@@ -120,7 +124,7 @@
         .btn-start:active { transform: scale(0.95); background: rgba(255,255,255,0.1); }
 
         /* 載入畫面 */
-        #loading-screen { justify-content: center; align-items: center; text-align: center; z-index: 2000; background: var(--bg-deep); }
+        #loading-screen { justify-content: center; align-items: center; text-align: center; z-index: 2000; background: var(--bg-deep); position: fixed; }
         .loading-logo { width: 180px; margin-bottom: 40px; animation: logoPulse 2s infinite; }
         @keyframes logoPulse { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.05); opacity: 1; } }
         
@@ -129,48 +133,54 @@
         .loader-circle-bg { fill: none; stroke: var(--glass-border); stroke-width: 4; }
         .loader-circle-progress { fill: none; stroke: var(--accent-yellow); stroke-width: 4; stroke-linecap: round; stroke-dasharray: 283; stroke-dashoffset: 283; transition: stroke-dashoffset 0.1s linear; }
 
-        /* 主畫面 */
-        .start-btn-outer { width: 180px; height: 180px; border-radius: 50%; border: 1px solid var(--glass-border); display: flex; justify-content: center; align-items: center; animation: pulseGlow 3s infinite; }
+        /* 主畫面資訊與按鈕 */
+        .start-btn-outer { width: 180px; height: 180px; border-radius: 50%; border: 1px solid var(--glass-border); display: flex; justify-content: center; align-items: center; animation: pulseGlow 3s infinite; position: relative; }
         @keyframes pulseGlow { 0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.2); } 70% { box-shadow: 0 0 0 20px rgba(255, 215, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); } }
 
-        /* 關卡資訊 UI */
-        .info-chapter-title { font-size: 3rem; letter-spacing: 6px; font-weight: 300; margin-top: 10%; margin-bottom: 5px; color: #fff; text-align: center; }
+        /* 關卡資訊 UI (深度模仿上傳圖片) */
+        .info-chapter-title { font-size: 3rem; letter-spacing: 6px; font-weight: 300; margin-top: 5%; margin-bottom: 5px; color: #fff; text-align: center; }
         .info-divider { width: 85%; height: 1px; background: #fff; margin: 10px auto; opacity: 0.6; }
         .info-mission-box { background: #fff; color: #000; padding: 8px 10px; border-radius: 8px; font-weight: bold; width: 90%; margin: 15px auto; font-size: 1.3rem; box-shadow: 0 5px 20px rgba(0,0,0,0.6); text-align: center; }
 
         /* 六角形雷達圖 */
-        .radar-box { width: 240px; height: 240px; margin: 30px auto; position: relative; }
+        .radar-box { width: 220px; height: 220px; margin: 25px auto; position: relative; }
         .radar-svg { width: 100%; height: 100%; filter: drop-shadow(0 0 5px rgba(255,255,255,0.1)); }
         .radar-area { fill: rgba(100, 149, 237, 0.45); stroke: #a0c4ff; stroke-width: 2.5; filter: drop-shadow(0 0 8px rgba(160,196,255,0.7)); }
-        .radar-label { position: absolute; font-size: 0.8rem; color: rgba(255,255,255,0.9); white-space: nowrap; font-weight: bold; text-shadow: 0 1px 3px rgba(0,0,0,0.9); }
+        .radar-label { position: absolute; font-size: 0.75rem; color: rgba(255,255,255,0.9); white-space: nowrap; font-weight: bold; text-shadow: 0 1px 3px rgba(0,0,0,0.9); }
 
         .stars-container { font-size: 2.5rem; color: var(--accent-yellow); margin-bottom: 20px; text-shadow: 0 0 15px rgba(255,215,0,0.7); text-align: center; }
 
-        /* 序幕內容樣式優化：移除內部滑桿 */
+        /* 序幕內容 */
         .prologue-page { display: none; flex-direction: column; width: 100%; }
         .prologue-page.active { display: flex; animation: fadeIn 0.5s ease forwards; }
-
-        .story-text-container { 
-            font-size: 0.95rem; 
-            line-height: 1.8; 
-            color: var(--text-white); 
-            /* 移除限制與滑桿 */
-            overflow: visible; 
-            max-height: none; 
-        }
+        .story-text-container { font-size: 0.95rem; line-height: 1.8; color: var(--text-white); overflow: visible; max-height: none; }
         .story-text-container p { margin-bottom: 14px; text-align: justify; }
         .story-highlight { border-left: 3px solid var(--accent-yellow); padding-left: 12px; font-style: italic; color: var(--accent-yellow); margin: 15px 0 !important; }
 
-        /* 底部導覽列 */
-        .bottom-nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 450px; background: rgba(10,14,20,0.95); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 24px; display: none; grid-template-columns: repeat(3, 1fr); padding: 12px 0; z-index: 1000; box-shadow: 0 -10px 20px rgba(0,0,0,0.5); }
+        /* 底部全域導覽列：固定於最下方 */
+        .bottom-nav { 
+            position: fixed; 
+            bottom: calc(15px + env(safe-area-inset-bottom)); 
+            left: 50%; 
+            transform: translateX(-50%); 
+            width: 92%; 
+            max-width: 450px; 
+            background: rgba(10,14,20,0.95); 
+            backdrop-filter: blur(20px); 
+            border: 1px solid var(--glass-border); 
+            border-radius: 24px; 
+            display: none; 
+            grid-template-columns: repeat(3, 1fr); 
+            padding: 12px 0; 
+            z-index: 1000; 
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.6);
+        }
         .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 0.7rem; color: var(--text-dim); cursor: pointer; }
         .nav-item svg { width: 22px; height: 22px; fill: var(--text-dim); }
         .nav-item.active { color: var(--accent-yellow); }
         .nav-item.active svg { fill: var(--accent-yellow); }
 
-        .video-container { position: relative; width: 100%; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 12px; border: 1px solid var(--glass-border); margin-bottom: 20px; }
-        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
-
+        /* 任務列表 */
         .mission-card { display: flex; justify-content: space-between; align-items: center; padding: 20px; border-radius: 16px; background: var(--glass-bg); border: 1px solid var(--glass-border); margin-bottom: 15px; }
         .mission-card.available { border-color: var(--accent-yellow); }
         .mission-card.passed { border-left: 6px solid var(--pass-green); background: rgba(0,0,0,0.4); }
@@ -183,11 +193,24 @@
         .story-card { margin-top: 20px; min-height: 180px; display: flex; flex-direction: column; justify-content: space-between; }
         .next-arrow { align-self: flex-end; color: var(--accent-yellow); font-size: 1.5rem; animation: bounceX 1s infinite; cursor: pointer; padding: 10px; }
         @keyframes bounceX { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(8px); } }
+
+        /* 繼續進度提示彈窗 */
+        #resume-dialog { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 85%; z-index: 3000; display: none; }
     </style>
 </head>
 <body>
 
     <div id="dynamic-bg" class="background-container"></div>
+
+    <!-- 繼續進度提示 -->
+    <div id="resume-dialog" class="glass-card" style="text-align: center;">
+        <h3 style="color: var(--accent-yellow); margin-bottom: 15px;">偵測到任務紀錄</h3>
+        <p style="font-size: 0.9rem; margin-bottom: 25px; line-height: 1.6;">系統發現黑鳶先前留下的進度，是否要繼續先前的驗證流程？</p>
+        <div style="display: flex; gap: 10px;">
+            <button class="btn-action" style="flex: 1;" onclick="resumeGame()">繼續進度</button>
+            <button class="btn-action" style="flex: 1; background: transparent; border: 1px solid var(--glass-border); color: white;" onclick="discardAndStart()">從頭開始</button>
+        </div>
+    </div>
 
     <!-- 1. 初始載入畫面 -->
     <section id="loading-screen" class="screen active">
@@ -212,7 +235,8 @@
         </div>
         <div style="display: flex; justify-content: center; align-items: center; margin: 40px 0;">
             <div class="start-btn-outer">
-                <div style="width: 140px; height: 140px; background: var(--glass-bg); border: 1.5px solid var(--accent-yellow); border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; pointer-events: auto;" onclick="startNewJourney()">
+                <!-- 觸發全螢幕 -->
+                <div style="width: 140px; height: 140px; background: var(--glass-bg); border: 1.5px solid var(--accent-yellow); border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; pointer-events: auto;" onclick="handleStartClick()">
                     <svg width="40" height="40" viewBox="0 0 24 24" fill="var(--accent-yellow)"><path d="M8 5v14l11-7z"/></svg>
                     <b style="letter-spacing:2px; margin-top:5px; color: #fff;">START</b>
                 </div>
@@ -223,7 +247,6 @@
 
     <!-- 3. 序幕劇情 -->
     <section id="prologue-screen" class="screen">
-        <!-- 序幕第一頁 -->
         <div id="prologue-p1" class="prologue-page active">
             <h2 style="color:var(--accent-yellow); margin-bottom:15px; letter-spacing:2px; text-align: center;">序章：代碼 黑鳶001</h2>
             <div class="video-container">
@@ -240,18 +263,15 @@
             </div>
         </div>
 
-        <!-- 序幕第二頁 -->
         <div id="prologue-p2" class="prologue-page">
             <h2 style="color:var(--accent-yellow); margin-bottom:15px; letter-spacing:2px; text-align: center;">序章：接受任務</h2>
             <div class="glass-card story-text-container">
                 <p>耳機先爆出一段短促雜訊，像有人用刀尖刮過金屬。下一秒，一個沉穩、帶著冷硬質感的男聲切入通訊。</p>
-                <p>「歡迎回來，黑鳶。先自我介紹—我是克洛斯（Kloss），真灼之眼外勤引導者。我的職責是任務通訊、節點校驗與撤離指令。你可以把我當成『導航者』：我只給方向與規則，不替你完成任何一步。通關，得靠你自己。」</p>
-                <p>他停頓半拍，聲音更低。「從現在起記住兩件事：第一，別讓流程斷線；第二，別相信任何看起來『正常』的系統回覆。」</p>
-                <p>「情況簡報：八斗子漁港遭駭。港務系統被全面控制，所有合法船隊的進港權限已凍結。現場只剩一種判定—退件補正。」</p>
-                <p>「但一級漁港真正信任的不是系統，是流程。我們要啟動『手動港務驗證』，把權限一段一段奪回來。你必須取得四個『授權片段』，拼成一組四位放行碼；再到驗證點提交申請，系統才會重啟，准予船隻進港。」</p>
+                <p>「歡迎回來，黑鳶。先自我介紹—我是克洛斯（Kloss），真灼之眼外勤引導者。我的職責是任務通訊、節點校驗與撤離指令。」</p>
+                <p>「八斗子漁港遭駭。港務系統被全面控制，所有船隊進港權限已凍結。但一級漁港真正信任的是流程。我們要啟動『手動港務驗證』。」</p>
+                <p>「你必須取得四個『授權片段』，拼成放行碼；再到驗證點提交申請，系統才會重啟。」</p>
                 <p class="story-highlight">「注意：駭客在監聽。港區內禁止公開拼碼。只在驗證點交件。」</p>
-                <p>你吸了一口氣，海風帶著鹽味，像某種誓約。通訊裡，克洛斯丟來最後一句，把你推進任務核心：</p>
-                <p>「第一步，先取得入場資格—進港申請書。跟著安排給你的引路人走。把流程做對，申請書才會落到你手上。」</p>
+                <p>「第一步，先取得入場資格—進港申請書。跟著引路人走。把流程做對，申請書才會落到你手上。」</p>
                 <div style="text-align: right; margin-top: 15px;">
                     <button class="btn-action" onclick="navigateTo('mission-screen')">任務開始 ➔</button>
                 </div>
@@ -288,9 +308,7 @@
             <div class="radar-label" style="bottom: 22%; left: -12%;">情報整合</div>
             <div class="radar-label" style="top: 22%; left: -12%;">情報搜查</div>
         </div>
-        
         <div id="lv-info-stars" class="stars-container"></div>
-
         <button class="btn-start" onclick="nextLevelStep()">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M18,13H17V12.19c0-1.76-1.43-3.19-3.19-3.19c-0.12,0-0.23,0.01-0.34,0.02V8.62c0-1.45-1.18-2.62-2.62-2.62s-2.62,1.18-2.62,2.62V12h-0.5c-0.83,0-1.5,0.67-1.5,1.5c0,0.13,0.02,0.26,0.05,0.38l1.37,5.13C7.94,20.01,8.85,21,10,21h6.5c1.38,0,2.5-1.12,2.5-2.5v-4C19,13.67,18.55,13,18,13z M10.5,2C8.01,2,6,4.01,6,6.5c0,0.81,0.22,1.56,0.59,2.21L4.88,10.43c-0.19,0.19-0.19,0.49,0,0.68l1.42,1.42c0.19,0.19,0.49,0.19,0.68,0L8.71,10.8c0.55,0.44,1.23,0.7,1.97,0.7C13.06,11.5,15,9.49,15,7.5V6.5h-2v1c0,0.83-0.67,1.5-1.5,1.5S10,8.33,10,7.5V6.5C10,5.67,10.67,5,11.5,5C12.33,5,13,5.67,13,6.5h2C15,4.01,12.99,2,10.5,2z"/></svg>
             START
@@ -298,19 +316,13 @@
         <p onclick="navigateTo('mission-screen')" style="margin-top:25px; font-size:0.9rem; color:rgba(255,255,255,0.4); cursor:pointer; text-align: center;">返回列表</p>
     </section>
 
-    <!-- 6. 劇情 -->
+    <!-- 6~10 流程模組 (維持) -->
     <section id="lv-story-screen" class="screen"><div class="glass-card story-card"><div id="lv-story-text" style="line-height:2;"></div><div class="next-arrow" onclick="nextStoryPage()">➜</div></div></section>
-    
-    <!-- 7. 地標 -->
     <section id="lv-landmark-screen" class="screen"><div class="glass-card" style="margin-top:auto; margin-bottom:20px;"><h3>地標掃描</h3><div id="lv-landmark-img" style="width:100%; height:180px; background-size:cover; margin:15px 0; border-radius:12px;"></div><p id="lv-landmark-text"></p><button class="btn-action" style="width:100%; margin-top:20px;" onclick="nextLevelStep()">進入解謎模式</button></div></section>
-    
-    <!-- 8. 謎題 -->
     <section id="lv-puzzle-screen" class="screen"><div class="glass-card"><div id="lv-puzzle-img" style="width:100%; height:200px; background-size:cover; margin-bottom:20px; border-radius:12px;"></div><p id="lv-puzzle-desc"></p><input type="text" id="ans-input" style="width:100%; padding:14px; background:rgba(0,0,0,0.4); border:1px solid var(--glass-border); color:white; text-align:center; border-radius:10px; margin:15px 0; font-size:1.1rem;" placeholder="輸入通關密鑰"><button class="btn-action btn-glow" style="width:100%;" onclick="verifyAnswer()">提交驗證</button><p id="puzzle-error" style="color:var(--error-red); display:none; text-align:center; margin-top:10px;">密鑰錯誤。</p><div id="puzzle-hint" style="background:rgba(255,215,0,0.1); color:var(--accent-yellow); padding:10px; border-radius:8px; margin-top:15px; display:none;"></div></div><div id="pass-stamp-overlay" class="pass-stamp">PASS</div></section>
-
-    <!-- 9. 結算 -->
     <section id="result-screen" class="screen"><div class="glass-card result-card"><h2>GAME COMPLETE</h2><div id="res-stats-container"></div><button class="btn-action" style="margin-top:30px; width:100%;" onclick="resetGame()">重置冒險</button></div></section>
 
-    <!-- 全域導覽列 -->
+    <!-- 固定於最下方的全域導覽列 -->
     <nav id="global-nav" class="bottom-nav">
         <div class="nav-item" onclick="openOverlay('guide-overlay')"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg><div>指南</div></div>
         <div class="nav-item" onclick="openOverlay('archive-overlay')"><svg viewBox="0 0 24 24"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6 10H6v-2h8v2zm4-4H6v-2h12v2z"/></svg><div>檔案</div></div>
@@ -323,22 +335,14 @@
     <div id="settings-overlay" class="overlay" onclick="closeOverlay()"><div class="glass-card" onclick="event.stopPropagation()"><h3>系統設定</h3><button class="btn-action" style="width:100%; background:var(--error-red); color:white;" onclick="resetGame()">重置所有進度</button></div></div>
 
     <script>
+        // --- 1. 資料化關卡架構 (5+1) ---
         const missionData = [
-            { 
-                id: 1, chapter: "任務一", name: "傳說的53-1", stars: 2, 
-                radar: [0, 40, 32, 24, 0, 0],
-                bg: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1000", 
-                story: ["耳機中傳來雜訊，你必須找到第一份申請書的藏匿點。"], 
-                landmarkImg: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1000", 
-                landmarkText: "前往漁港舊倉庫牆面，尋找被漆掉一半的「53-1」編號。", 
-                puzzleImg: "https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1000", 
-                puzzleDesc: "編號下方的四位密碼即為授權片段。", answer: "1984", hint: "年份就在陰暗處。" 
-            },
+            { id: 1, chapter: "任務一", name: "傳說的53-1", stars: 2, radar: [0, 40, 32, 24, 0, 0], bg: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1000", story: ["耳機中傳來雜訊，找到第一份申請書的藏匿點。"], landmarkImg: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1000", landmarkText: "前往漁港舊倉庫牆面，尋找被漆掉一半的「53-1」編號。", puzzleImg: "https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1000", puzzleDesc: "編號下方的四位密碼即為授權片段。", answer: "1984", hint: "數字就在陰暗處。" },
             { id: 2, chapter: "任務二", name: "漁網中的暗號", stars: 2, radar: [10, 30, 40, 20, 10, 10], bg: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1000", story: ["卸魚區的吊車發出了規律的聲響。"], landmarkImg: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1000", landmarkText: "尋找卸魚區藍色吊車。", puzzleImg: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1000", puzzleDesc: "輸入標籤代碼。", answer: "NET", hint: "漁具。" },
             { id: 3, chapter: "任務三", name: "消失的卸魚申報", stars: 2, radar: [15, 20, 30, 40, 20, 10], bg: "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?q=80&w=1000", story: ["有人在佈告欄留下了數字。"], landmarkImg: "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?q=80&w=1000", landmarkText: "前往漁會大廳佈告欄。", puzzleImg: "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?q=80&w=1000", puzzleDesc: "輸入編號。", answer: "0801", hint: "紀念日。" },
             { id: 4, chapter: "任務四", name: "燈塔的規律雜訊", stars: 3, radar: [30, 40, 25, 30, 20, 20], bg: "https://images.unsplash.com/photo-1493246507139-91e8bef99c02?q=80&w=1000", story: ["燈塔頻率異常。"], landmarkImg: "https://images.unsplash.com/photo-1493246507139-91e8bef99c02?q=80&w=1000", landmarkText: "觀測燈塔。", puzzleImg: "https://images.unsplash.com/photo-1493246507139-91e8bef99c02?q=80&w=1000", puzzleDesc: "摩斯密碼。", answer: "WAVE", hint: "波浪。" },
             { id: 5, chapter: "任務五", name: "航線修正指令", stars: 3, radar: [25, 30, 30, 35, 40, 15], bg: "https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1000", story: ["地圖背後的秘密。"], landmarkImg: "https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1000", landmarkText: "尋找地標雕像。", puzzleImg: "https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1000", puzzleDesc: "輸入方位縮寫。", answer: "NE", hint: "東北。" },
-            { id: 6, chapter: "最終章", name: "最後的考驗", stars: 5, radar: [40, 40, 40, 40, 40, 40], bg: "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?q=80&w=1000", story: ["輸入終極放行碼。"], landmarkImg: "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?q=80&w=1000", landmarkText: "回到驗證點。", puzzleImg: "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?q=80&w=1000", puzzleDesc: "輸入終極金鑰。", answer: "LEGEND", hint: "冒險名稱。", isFinal: true }
+            { id: 6, chapter: "最終章", name: "最後的考驗", stars: 5, radar: [40, 40, 40, 40, 40, 40], bg: "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?q=80&w=1000", story: ["輸入終極放行碼。"], landmarkImg: "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?q=80&w=1000", landmarkText: "回到起點。", puzzleImg: "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?q=80&w=1000", puzzleDesc: "輸入終極金鑰。", answer: "LEGEND", hint: "冒險名稱。", isFinal: true }
         ];
 
         const archiveData = [
@@ -347,42 +351,98 @@
             { id: "003", title: "引路人", desc: "機關指派的現地導引員；負責啟動流程驗證。" }
         ];
 
-        let state = { isStarted: false, playTime: 0, completedMissions: [], activeMId: null, activeStep: 'info', storyPageIndex: 0, attempts: {} };
+        // --- 2. 狀態管理與進度儲存 ---
+        let state = { 
+            isStarted: false, 
+            playTime: 0, 
+            completedMissions: [], 
+            activeMId: null, 
+            activeStep: 'main', // main, info, story, landmark, puzzle
+            storyPageIndex: 0, 
+            attempts: {} 
+        };
 
-        function saveState() { localStorage.setItem('abs_legend_port_v5_final', JSON.stringify(state)); }
-        function loadState() {
-            const saved = localStorage.getItem('abs_legend_port_v5_final');
+        const STORAGE_KEY = 'abs_legend_port_pro_v1';
+
+        function saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+
+        function checkProgress() {
+            const saved = localStorage.getItem(STORAGE_KEY);
             if (saved) {
-                state = JSON.parse(saved);
-                if (state.isStarted) {
-                    renderArchive();
-                    if (state.activeMId) openLevel(state.activeMId, state.activeStep, state.storyPageIndex);
-                    else navigateTo('mission-screen');
+                const savedState = JSON.parse(saved);
+                // 只有當玩家有開始遊戲且有進度時才詢問
+                if (savedState.isStarted && (savedState.completedMissions.length > 0 || savedState.activeMId)) {
+                    document.getElementById('resume-dialog').style.display = 'block';
+                    return true;
                 }
+            }
+            return false;
+        }
+
+        function resumeGame() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            state = JSON.parse(saved);
+            document.getElementById('resume-dialog').style.display = 'none';
+            // 自動嘗試全螢幕並進入正確畫面
+            toggleFullScreen();
+            if (state.activeMId) {
+                openLevel(state.activeMId, state.activeStep, state.storyPageIndex);
+            } else {
+                navigateTo('mission-screen');
+            }
+            startTimer();
+        }
+
+        function discardAndStart() {
+            localStorage.removeItem(STORAGE_KEY);
+            document.getElementById('resume-dialog').style.display = 'none';
+            navigateTo('main-screen');
+        }
+
+        // --- 3. 導覽邏輯與全螢幕 ---
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
             }
         }
 
-        function renderArchive() {
-            const container = document.getElementById('archive-list');
-            if (!state.isStarted) { container.innerHTML = '<p style="text-align:center;">檔案已加密。</p>'; return; }
-            container.innerHTML = archiveData.map(item => `<div class="archive-item"><div class="archive-title">${item.id}｜${item.title}</div><div class="archive-desc">${item.desc}</div></div>`).join('');
+        function handleStartClick() {
+            toggleFullScreen();
+            startNewJourney();
         }
 
         function navigateTo(screenId) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(screenId).classList.add('active');
+            
             const nav = document.getElementById('global-nav');
+            // 只在遊戲進行中顯示導覽列
             nav.style.display = (['loading-screen', 'main-screen', 'prologue-screen'].includes(screenId)) ? 'none' : 'grid';
-            if (screenId === 'mission-screen') { state.isStarted = true; state.activeMId = null; saveState(); renderMissionList(); renderArchive(); }
+            
+            if (screenId === 'mission-screen') { 
+                state.isStarted = true; 
+                state.activeMId = null; 
+                state.activeStep = 'main';
+                saveState(); 
+                renderMissionList(); 
+                renderArchive(); 
+            }
+            if (screenId === 'result-screen') renderResultScreen();
         }
 
-        function startNewJourney() { state.isStarted = true; saveState(); navigateTo('prologue-screen'); }
-        function showPrologueNext() { document.getElementById('prologue-p1').classList.remove('active'); document.getElementById('prologue-p2').classList.add('active'); }
+        function startNewJourney() { 
+            state.isStarted = true; 
+            saveState(); 
+            navigateTo('prologue-screen'); 
+            startTimer();
+        }
 
+        // --- 4. 關卡模組邏輯 ---
         function openLevel(id, step = 'info', page = 0) {
             const m = missionData.find(x => x.id === id);
             state.activeMId = id; state.activeStep = step; state.storyPageIndex = page; saveState();
-            document.getElementById('dynamic-bg').style.backgroundImage = `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url('${m.bg}')`;
+            document.getElementById('dynamic-bg').style.backgroundImage = `linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.9)), url('${m.bg}')`;
+            
             if (step === 'info') {
                 document.getElementById('lv-info-chapter').innerText = m.chapter;
                 document.getElementById('lv-info-name').innerText = m.name;
@@ -397,8 +457,7 @@
                 document.getElementById('lv-landmark-text').innerText = m.landmarkText;
                 navigateTo('lv-landmark-screen');
             } else if (step === 'puzzle') {
-                const puzzleImgEl = document.getElementById('lv-puzzle-img');
-                puzzleImgEl.style.backgroundImage = `url('${m.puzzleImg}')`;
+                document.getElementById('lv-puzzle-img').style.backgroundImage = `url('${m.puzzleImg}')`;
                 document.getElementById('lv-puzzle-desc').innerText = m.puzzleDesc;
                 document.getElementById('ans-input').value = '';
                 document.getElementById('puzzle-error').style.display = 'none';
@@ -423,39 +482,73 @@
             if (input === m.answer) {
                 if (!state.completedMissions.includes(m.id)) state.completedMissions.push(m.id);
                 saveState();
-                if (m.isFinal) navigateTo('result-screen'); else navigateTo('mission-screen');
+                const stamp = document.getElementById('pass-stamp-overlay');
+                stamp.style.display = 'block';
+                setTimeout(() => { stamp.style.display = 'none'; navigateTo('mission-screen'); }, 1500);
             } else {
                 document.getElementById('puzzle-error').style.display = 'block';
-                if (state.attempts[m.id] >= 3) { document.getElementById('puzzle-hint').innerText = `[HINT]: ${m.hint}`; document.getElementById('puzzle-hint').style.display = 'block'; }
+                if (state.attempts[m.id] >= 3) { document.getElementById('puzzle-hint').innerText = `[CLAROS HINT]: ${m.hint}`; document.getElementById('puzzle-hint').style.display = 'block'; }
             }
         }
 
         function renderMissionList() {
             const container = document.getElementById('mission-list-container'); container.innerHTML = '';
+            const stdCount = 5;
+            const completedStd = state.completedMissions.filter(id => id <= stdCount).length;
             missionData.forEach(m => {
                 const isPassed = state.completedMissions.includes(m.id);
                 const isAvailable = m.id === 1 || state.completedMissions.includes(m.id - 1);
-                const isFinalLocked = m.isFinal && state.completedMissions.filter(id=>id<6).length < 5;
+                const isFinalLocked = m.isFinal && completedStd < 5;
                 const status = isFinalLocked ? 'locked' : (isPassed ? 'passed' : (isAvailable ? 'available' : 'locked'));
                 const card = document.createElement('div');
                 card.className = `mission-card ${status}`;
-                card.innerHTML = `<div><div style="font-size:0.7rem; color:var(--accent-yellow); font-weight:bold;">MISSION #0${m.id}</div><h4 style="margin:2px 0;">${m.name}</h4></div><div style="font-size:0.8rem;">${isPassed ? '<div class="pass-stamp">PASS</div>' : (status === 'available' ? '挑戦' : '🔒')}</div>`;
+                card.innerHTML = `<div><div style="font-size:0.7rem; color:var(--accent-yellow); font-weight:bold;">MISSION #0${m.id}</div><h4 style="margin:2px 0;">${m.name}</h4></div><div style="font-size:0.8rem;">${isPassed ? '<div class="pass-stamp" style="display:block">PASS</div>' : (status === 'available' ? '挑戰' : '🔒')}</div>`;
                 if (status !== 'locked') card.onclick = () => openLevel(m.id);
                 container.appendChild(card);
             });
         }
 
+        // --- 5. 檔案與設定 ---
+        function renderArchive() {
+            const container = document.getElementById('archive-list');
+            if (!state.isStarted) { container.innerHTML = '<p>已加密。</p>'; return; }
+            container.innerHTML = archiveData.map(item => `<div class="archive-item"><div class="archive-title">${item.id}｜${item.title}</div><div class="archive-desc">${item.desc}</div></div>`).join('');
+        }
+
+        function renderResultScreen() { document.getElementById('res-stats-container').innerHTML = `<div class="stat-row"><span>總遊玩時間</span><span>${formatTime(state.playTime)}</span></div>`; missionData.forEach(m => { document.getElementById('res-stats-container').innerHTML += `<div class="stat-row"><span>#0${m.id} ${m.name}</span><span>${state.attempts[m.id] || 0} 次 / PASS</span></div>`; }); }
         function openOverlay(id) { document.getElementById(id).style.display = 'block'; }
         function closeOverlay() { document.querySelectorAll('.overlay').forEach(o => o.style.display = 'none'); }
-        function resetGame() { if(confirm("重置進度？")) { localStorage.clear(); location.reload(); } }
+        function resetGame() { if(confirm("確定重置冒險紀錄？")) { localStorage.removeItem(STORAGE_KEY); location.reload(); } }
+        function showPrologueNext() { document.getElementById('prologue-p1').classList.remove('active'); document.getElementById('prologue-p2').classList.add('active'); }
         function formatTime(s) { return `${Math.floor(s/3600).toString().padStart(2,'0')}:${Math.floor((s%3600)/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`; }
         
-        setInterval(() => { if(state.isStarted && !state.completedMissions.includes(6)) { state.playTime++; if(document.getElementById('play-time-display')) document.getElementById('play-time-display').innerText = `TIME: ${formatTime(state.playTime)}`; } }, 1000);
+        let timer;
+        function startTimer() {
+            if (timer) clearInterval(timer);
+            timer = setInterval(() => { 
+                if(state.isStarted && !state.completedMissions.includes(6)) { 
+                    state.playTime++; 
+                    if(document.getElementById('play-time-display')) document.getElementById('play-time-display').innerText = `TIME: ${formatTime(state.playTime)}`; 
+                    if(state.playTime % 10 === 0) saveState(); // 每10秒自動存檔一次
+                } 
+            }, 1000);
+        }
 
         window.onload = () => {
             let p = 0; const bar = document.getElementById('progress-bar');
-            const timer = setInterval(() => { p += 10; if (p >= 100) { p = 100; clearInterval(timer); setTimeout(() => { loadState(); if(!state.isStarted) navigateTo('main-screen'); }, 500); }
-            bar.style.strokeDashoffset = 283 - (p/100)*283; document.getElementById('percent-val').innerText = p; }, 60);
+            const loadTimer = setInterval(() => { 
+                p += 10; 
+                if (p >= 100) { 
+                    p = 100; 
+                    clearInterval(loadTimer); 
+                    setTimeout(() => { 
+                        const hasProgress = checkProgress();
+                        if (!hasProgress) navigateTo('main-screen');
+                    }, 500); 
+                }
+                bar.style.strokeDashoffset = 283 - (p/100)*283; 
+                document.getElementById('percent-val').innerText = p; 
+            }, 60);
         };
     </script>
 </body>
